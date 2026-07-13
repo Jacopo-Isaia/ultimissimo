@@ -1,0 +1,16 @@
+RISOLUZIONE ESAME 10/07/2025 - TRACCIA A
+
+Modello dei dati:
+La classe Product (model/product.py) rappresenta un prodotto ed e' resa hashable tramite product_id, cosi' da poter essere usata direttamente come nodo del grafo networkx.
+
+DAO (database/DAO.py):
+Sono stati implementati quattro metodi statici: getDateRange (estremi minimo e massimo di order_date), getCategories (elenco delle categorie ordinate per nome), getProductsByCategory (tutti i prodotti di una categoria, che costituiscono i nodi del grafo) e getSales, che restituisce un dizionario product_id -> numero di vendite distinte, calcolato con COUNT(DISTINCT order_id) filtrando con DATE(order_date) BETWEEN start AND end per includere gli estremi. La connessione avviene tramite connection pooling (DB_connect con file connector.cnf, user root e password jacopo, database bike_store_full). Ogni metodo gestisce connessione nulla ed errori mysql.connector.Error restituendo None, valore intercettato dal modello e segnalato dal controller con un alert.
+
+Modello (model/model.py):
+buildGraph crea un grafo diretto e pesato (nx.DiGraph) i cui nodi sono tutti i prodotti della categoria selezionata; i prodotti non venduti nel range restano nodi isolati. Per ogni coppia di prodotti venduti nel range viene inserito un arco dal prodotto con piu' vendite verso quello con meno vendite, con peso pari alla somma delle vendite; in caso di parita' vengono inseriti entrambi gli archi. getBestProducts calcola per ogni nodo la differenza tra la somma dei pesi degli archi uscenti e quella degli archi entranti e restituisce i 5 nodi con valore massimo.
+
+Punto 2 - algoritmo ricorsivo:
+getCammino avvia una ricerca ricorsiva (pattern della ricorsione visto a lezione, con lista parziale, append e pop per il backtracking). La ricorsione esplora i successori dell'ultimo nodo rispettando i versi degli archi, evita nodi gia' visitati e si ferma quando il numero di archi del cammino parziale e' pari a Lun: se in quel caso l'ultimo nodo coincide con l'End Product, il peso totale viene confrontato con il migliore corrente e il cammino ottimo viene aggiornato.
+
+Controller e View:
+Il controller riempie il dropdown delle categorie all'avvio (fillDdCategory), imposta gli estremi dei DatePicker (setDates), valida tutti gli input (categoria e date selezionate, ordine delle date, lunghezza intera positiva, prodotti di start ed end selezionati e distinti) e mostra alert in caso di errore di validazione o di database. Dopo la creazione del grafo vengono mostrati numero di nodi e archi e vengono popolati i dropdown Start/End Product con i nodi del grafo; la ricerca del cammino stampa i nodi del percorso e la somma dei pesi, oppure segnala l'assenza di cammini della lunghezza richiesta.

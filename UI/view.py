@@ -6,7 +6,6 @@ import flet as ft
 class View(ft.UserControl):
     def __init__(self, page: ft.Page):
         super().__init__()
-        # page stuff
         self._page = page
         self._page.title = "Esame del 10/07/2025 - Turno A"
         self._page.horizontal_alignment = 'CENTER'
@@ -14,9 +13,7 @@ class View(ft.UserControl):
         self._page.bgcolor = "#ebf4f4"
         self._page.window_height = 600
         self._page.window_width = 1000
-        # controller (it is not initialized. Must be initialized in the main, after the controller is created)
         self._controller = None
-        # graphical elements
         self._title = None
         self.txt_name = None
         self.btn_hello = None
@@ -24,7 +21,6 @@ class View(ft.UserControl):
         self.txt_container = None
 
     def load_interface(self):
-        # title
         self._title = ft.Text("Esame del 10/07/2025 - Turno A", color="green", size=24)
         self._page.controls.append(self._title)
 
@@ -37,8 +33,8 @@ class View(ft.UserControl):
 
         self._page.overlay.append(self._dp1)
         self._btnCal1 = ft.ElevatedButton("Start date",
-                                              icon=ft.icons.CALENDAR_MONTH,
-                                              on_click=lambda _: self._dp1.pick_date())
+                                          icon=ft.icons.CALENDAR_MONTH,
+                                          on_click=lambda _: self._dp1.pick_date())
 
         self._dp2 = ft.DatePicker(
             on_change=lambda e: print(f"Giorno selezionato: {self._dp2.value}"),
@@ -46,15 +42,15 @@ class View(ft.UserControl):
         )
         self._page.overlay.append(self._dp2)
         self._btnCal2 = ft.ElevatedButton("End date",
-                                              icon=ft.icons.CALENDAR_MONTH,
-                                              on_click=lambda _: self._dp2.pick_date())
+                                          icon=ft.icons.CALENDAR_MONTH,
+                                          on_click=lambda _: self._dp2.pick_date())
 
         self._controller.setDates()
 
         self._btnCreaGrafo = ft.ElevatedButton(text="Crea Grafo", on_click=self._controller.handleCreaGrafo)
 
         self._btnBestProdotti = ft.ElevatedButton(text="Prodotti più venduti",
-                                           on_click=self._controller.handleBestProdotti)
+                                                  on_click=self._controller.handleBestProdotti)
 
         row1 = ft.Row([self._ddcategory, self._btnCal1, self._btnCal2, self._btnCreaGrafo, self._btnBestProdotti],
                       alignment=ft.MainAxisAlignment.CENTER)
@@ -73,6 +69,9 @@ class View(ft.UserControl):
 
         self.txt_result = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=False)
         self._page.controls.append(self.txt_result)
+
+        self._controller.fillDdCategory()
+
         self._page.update()
 
     @property
